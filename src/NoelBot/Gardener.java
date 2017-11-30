@@ -14,29 +14,16 @@ class Gardener extends Robot {
             try {
 
                 Direction dir = randomDirection();
+                int treeCount = robotController.getTreeCount();
 
                 if (gardnerDir == null) {
                     gardnerDir = dir;
                 }
 
-                if (!(robotController.isCircleOccupiedExceptByThisRobot(robotController.getLocation(), robotController.getType().bodyRadius * 4.0f))) {
-                    settled = true;
-
-                    if (robotController.canPlantTree(dir)) {
-                        robotController.plantTree(dir);
-                    }
-                }
-
                 if (settled) {
-                    if (!(soldiersBuilt % 3 == 0)) {
-                        if (robotController.canBuildRobot(RobotType.SOLDIER, dir)) {
-                            robotController.buildRobot(RobotType.SOLDIER, dir);
-                            soldiersBuilt++;
-                        }
-                    } else {
-                        if (robotController.canPlantTree(dir)) {
-                            robotController.plantTree(dir);
-                            treesPlanted++;
+                    if (!(soldiersBuilt % 3 == 0) && treeCount > 20) {
+                        if (robotController.canBuildRobot(RobotType.SOLDIER, gardnerDir)) {
+                            robotController.buildRobot(RobotType.SOLDIER, gardnerDir);
                             soldiersBuilt++;
                         } else {
                             if (robotController.canBuildRobot(RobotType.SOLDIER, dir)) {
@@ -44,6 +31,50 @@ class Gardener extends Robot {
                                 soldiersBuilt++;
                             }
                         }
+                    } else if (treesPlanted > 0 && treesPlanted < 5) {
+                        gardnerDir = gardnerDir.rotateLeftDegrees(60);
+                        if (robotController.canPlantTree(gardnerDir)) {
+                            robotController.plantTree(gardnerDir);
+                            treesPlanted++;
+                            if (treeCount > 20) {
+                                soldiersBuilt++;
+                            }
+                        }
+                    } else if (treesPlanted == 5) {
+                        gardnerDir = gardnerDir.rotateLeftDegrees(60);
+                        if (robotController.canBuildRobot(RobotType.SOLDIER, gardnerDir)) {
+                            robotController.buildRobot(RobotType.SOLDIER, gardnerDir);
+                            soldiersBuilt++;
+                        }
+                    } else if (treesPlanted > 5) {
+                        if (robotController.canBuildRobot(RobotType.SOLDIER, gardnerDir)) {
+                            robotController.buildRobot(RobotType.SOLDIER, gardnerDir);
+                            soldiersBuilt++;
+                        }
+                    } else {
+                        if (robotController.canPlantTree(dir)) {
+                            robotController.plantTree(dir);
+                            treesPlanted++;
+                            gardnerDir = dir;
+                            if (treeCount > 20) {
+                                soldiersBuilt++;
+                            }
+                        } else {
+                            if (robotController.canBuildRobot(RobotType.SOLDIER, dir)) {
+                                robotController.buildRobot(RobotType.SOLDIER, dir);
+                                soldiersBuilt++;
+                            }
+                        }
+                    }
+                }
+
+                if (!(robotController.isCircleOccupiedExceptByThisRobot(robotController.getLocation(), robotController.getType().bodyRadius * 4.0f)) && !settled) {
+                    settled = true;
+
+                    if (robotController.canPlantTree(dir)) {
+                        robotController.plantTree(dir);
+                        gardnerDir = dir;
+                        treesPlanted++;
                     }
                 }
 
