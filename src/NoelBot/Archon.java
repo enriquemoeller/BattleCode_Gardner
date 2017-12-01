@@ -15,7 +15,7 @@ public class Archon extends Robot {
             try {
                 System.out.println(System.getProperty("bc.testing.seed", "0").hashCode() + 1);
                 Direction dir = randomDirection();
-                if (robotController.canHireGardener(dir) && Math.random() < .01 && numberOfGardeners < 16) {
+                if (robotController.canHireGardener(dir) && Math.random() < .05 && numberOfGardeners < 16) {
                     robotController.hireGardener(dir);
                     System.out.println("number of gardeners " + numberOfGardeners);
                     numberOfGardeners++;
